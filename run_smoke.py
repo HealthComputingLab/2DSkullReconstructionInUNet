@@ -68,3 +68,23 @@ else:
         print('\ntorch available:', torch.__version__)
     except Exception:
         print('\nTorch not available; skip runtime dataset check')
+
+
+'''
+This script should run out something like this:
+
+(unet_skull) E:\Research\2DSkullReconstructionInUNet>python run_smoke.py
+Project root: E:\Research\2DSkullReconstructionInUNet
+config: OK
+PATH_TRAIN = E:\Research\2DSkullReconstructionInUNet\dataset\train
+Image_Painting.library: OK
+Super_Resolution.library: OK
+
+All smoke imports OK
+
+Dataset paths:
+ TRAIN exists: True E:\Research\2DSkullReconstructionInUNet\dataset\train
+  VAL exists: True E:\Research\2DSkullReconstructionInUNet\dataset\val
+
+torch available: 2.8.0+cpu
+'''

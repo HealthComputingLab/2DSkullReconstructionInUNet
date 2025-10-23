@@ -33,24 +33,19 @@ Fire up your environment in three steps:
 
 ### 1. Create Virtual Environment
 
-**PowerShell:**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-```
 
-**Bash/Zsh:**
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
+conda create -n skull2d python=3.9 -y
+conda avtivate skull2d
 ```
 
 ### 2. Install Dependencies
 
 ```powershell
 pip install -r requirements.txt
+
+python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+# Install torch to use CUDA for training if "torch.cuda.is_available()" == False
 ```
 
 ### 3. (Optional) Install as Package

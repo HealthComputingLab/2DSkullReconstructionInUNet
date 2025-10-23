@@ -1,7 +1,7 @@
 ## Core Python packages (choose versions compatible with your Python interpreter)
 # Use ranges to increase chance of successful resolution on older Python versions.
-opencv-python>=4.6.0,<5
-numpy>=1.23.0,<2.0
+opencv-python
+numpy
 # pydicom 3.x requires Python >=3.10; for broader compatibility use 2.x
 pydicom>=2.4.4,<3.0
 
@@ -20,8 +20,8 @@ matplotlib>=3.5.0
 
 # Perceptual and evaluation libs
 lpips>=0.1.4
-torcheval>=0.1.1
-
+torcheval>=0.0.7
+torchsummary
 # NOTE: PyTorch is intentionally NOT pinned here because users must pick the wheel
 # that matches their Python and CUDA versions. Install PyTorch separately following
 # the official instructions: https://pytorch.org/get-started/locally/
