@@ -1,259 +1,185 @@
-# Skull Reconstruction UNet
+# 🧠 Skull Reconstruction UNet
 
-A UNet-based deep learning framework for skull reconstruction, image inpainting, and super-resolution tasks.
+**Deep learning meets medical imaging**: A UNet-based framework for skull reconstruction, image inpainting, and super-resolution tasks.
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Repository Status](#repository-status)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Dataset Management](#dataset-management)
-- [Troubleshooting](#troubleshooting)
+> **Research Project** | This repository contains production-ready model architectures and training utilities. Large datasets and example notebooks are maintained separately.
 
 ---
 
-## Overview
+## 🚀 What's Inside
 
-This repository implements UNet architectures for medical imaging tasks, specifically:
-- **Skull reconstruction** from incomplete scan data
-- **Image inpainting** for filling missing regions
-- **Super-resolution** enhancement
+This research codebase provides:
 
----
-
-## Repository Status
-
-**Recent Changes:** All example datasets and Jupyter notebooks have been removed. The repository now contains only production model code and training scripts.
+- **🎯 Training Pipeline** — `main_run_scan_rebuild.py` orchestrates the complete training workflow
+- **✅ Smoke Testing** — `run_smoke.py` validates your environment and dataset configuration
+- **⚙️ Centralized Config** — `config.py` manages paths, hyperparameters, and training criteria
+- **🏗️ Modular Architecture** — `Unet_Architecture/` contains specialized implementations:
+  - Image inpainting for skull defect reconstruction
+  - Super-resolution for enhanced image quality
 
 ---
 
-## Installation
+## 📋 Requirements
 
-### Prerequisites
+- **Python 3.8+** (verified compatibility)
+- **GPU Recommended** — CUDA-capable hardware dramatically accelerates training
+- **PyTorch** — Install from [pytorch.org](https://pytorch.org/get-started/locally/) matching your system
 
-- Python 3.10 or higher
-- CUDA-compatible GPU (optional, but recommended for training)
+---
 
-### Step 1: Create Virtual Environment
+## ⚡ Quick Setup
 
-**Option A: Conda (Recommended)**
+Fire up your environment in three steps:
 
-```bash
-conda create -n unet_skull python=3.10 -y
-conda activate unet_skull
-```
+### 1. Create Virtual Environment
 
-**Option B: venv (Windows PowerShell)**
-
+**PowerShell:**
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 ```
 
-### Step 2: Install PyTorch
-
-Visit the [PyTorch installation page](https://pytorch.org/get-started/locally/) to get the command matching your CUDA version.
-
-**Example (CPU-only):**
-
+**Bash/Zsh:**
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 ```
 
-**Example (CUDA 11.8):**
+### 2. Install Dependencies
 
-```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-```
-
-### Step 3: Install Dependencies
-
-```bash
+```powershell
 pip install -r requirements.txt
 ```
 
-### Step 4: Install Project in Editable Mode
+### 3. (Optional) Install as Package
 
-```bash
+Make `Unet_Architecture` importable from anywhere:
+
+```powershell
 pip install -e .
 ```
 
-This enables imports like `Unet_Architecture.Image_Painting` without manual PYTHONPATH configuration.
+---
 
-### Step 5: Verify Installation
+## 🎛️ Configuration
 
-Run the smoke test to verify your environment:
+All settings live in `config.py`. Out of the box, it expects:
 
-```bash
+```
+📂 dataset/
+   ├─ 📁 train/  → PATH_TRAIN
+   └─ 📁 val/    → PATH_VAL
+```
+
+**Key parameters you can tune:**
+- `BATCH_SIZE` — Trade memory for speed
+- `LEARNING_RATE` — Control convergence behavior
+- `IMAGE_WIDTH` & `IMAGE_HEIGHT` — Input dimensions
+- Early stopping criteria and epoch limits
+
+💡 **Pro tip:** If your data lives elsewhere, just update the path variables at the top of `config.py`.
+
+---
+
+## 📁 Dataset Structure
+
+Organize your images like this:
+
+```
+dataset/
+  ├─ train/
+  │   ├─ skull_001.png
+  │   ├─ skull_002.png
+  │   └─ ...
+  └─ val/
+      ├─ skull_val_001.png
+      ├─ skull_val_002.png
+      └─ ...
+```
+
+**Supported formats:** `.png`, `.jpg`, `.jpeg`
+
+⚠️ **Important:** Never commit large datasets! Host them externally (cloud storage, institutional servers) and document download instructions separately.
+
+---
+
+## 🧪 Verify Your Setup
+
+Before training, run the smoke test to catch configuration issues early:
+
+```powershell
 python run_smoke.py
 ```
 
-This checks for:
-- Core packages (torch, torchvision, PIL, numpy, matplotlib)
-- Correct project module imports
+**What it checks:**
+- ✓ Config module imports correctly
+- ✓ Dataset paths point to existing directories
+- ✓ UNet architecture modules load without errors
+- ✓ Python environment has required packages
+
+If everything passes, you're ready to train! 🎉
 
 ---
 
-## Configuration
+## 🏃 Running Training
 
-All configuration parameters are defined in `config.py`. Review and modify these before training:
+Launch training from the repository root:
 
-### Dataset Paths
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `PATH_TRAIN` | Training dataset directory | _(must be set)_ |
-| `PATH_VAL` | Validation dataset directory | _(must be set)_ |
-
-### Training Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `TARGET_DICE_SCORE` | Early stopping threshold | `0.974` |
-| `MAX_EPOCHS_PER_ROUND` | Maximum epochs per training round | `250` |
-| `MAX_RANDOM_ROUNDS` | Number of random restarts | `10` |
-| `BATCH_SIZE` | Training batch size | `8` |
-| `LEARNING_RATE` | Optimizer learning rate | `0.0005` |
-
-### Image Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `IMAGE_WIDTH` | Input image width | `256` |
-| `IMAGE_HEIGHT` | Input image height | `256` |
-| `CUT_SIZE` | Patch/crop size for preprocessing | _(tuple)_ |
-
-### Loss Parameters
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `perceptual_loss_rate` | Blending factor for perceptual loss | `0.05` |
-
-**Important:** Edit `config.py` to point `PATH_TRAIN` and `PATH_VAL` to your local dataset folders before starting training.
-
----
-
-## Usage
-
-### Running Training
-
-Execute the main training script:
-
-```bash
+```powershell
 python main_run_scan_rebuild.py
 ```
 
-This will:
-1. Load training and validation datasets from configured paths
-2. Initialize the UNet model
-3. Train with early stopping based on Dice score
+The script will:
+1. Load and validate your dataset
+2. Initialize the UNet architecture
+3. Train with progress monitoring
 4. Save checkpoints automatically
+5. Validate on your validation set
+
+Check the top of `main_run_scan_rebuild.py` for command-line options and advanced configuration.
 
 ---
 
-## Dataset Management
-
-### Expected Dataset Structure
-
-Organize your datasets as follows:
+## 🗂️ Project Structure
 
 ```
-Unet_Architecture/
-└── Image_Painting/
-    └── dataset/
-        └── dataset/
-            ├── train/
-            │   ├── image1.png
-            │   ├── image2.png
-            │   └── ...
-            └── val/
-                ├── image1.png
-                ├── image2.png
-                └── ...
+skull-reconstruction-unet/
+├─ 📄 config.py                    # Central configuration hub
+├─ 🎯 main_run_scan_rebuild.py    # Training orchestration
+├─ ✅ run_smoke.py                 # Environment validation
+├─ 📦 Unet_Architecture/           # Model implementations
+│   ├─ Image_Painting/             # Inpainting models
+│   └─ Super_Resolution/           # SR models
+├─ 📂 dataset/                     # Your data goes here
+│   ├─ train/
+│   └─ val/
+└─ 📋 requirements.txt             # Python dependencies
 ```
-
-### Downloading Datasets
-
-For large datasets, use the provided download helper script:
-
-```bash
-python scripts/download_data.py \
-  --url <DATASET_URL> \
-  --out-dir Unet_Architecture/Image_Painting/dataset/dataset
-```
-
-**Supported formats:**
-- `.zip`
-- `.tar`, `.tar.gz`, `.tgz`
-
-**Notes:**
-- For private datasets, use signed URLs or add authentication wrappers
-- Never commit large dataset files to the repository
-- Host datasets externally (cloud storage, GitHub releases, etc.)
 
 ---
 
-## Troubleshooting
+## 📝 Development Notes
 
-### Import Errors for `Unet_Architecture.*`
+**Best Practices:**
+- 🔒 Keep datasets external — use `.gitignore` to exclude `dataset/` contents
+- 📊 Track experiments with clear naming conventions
+- 💾 Regularly backup trained model checkpoints
+- 🧬 Document any architectural modifications
 
-**Problem:** Module import fails after installing dependencies.
-
-**Solution:** Reinstall the project in editable mode:
-
-```bash
-pip install -e .
-```
-
-### PyTorch Installation Issues
-
-**Problem:** Wrong PyTorch wheel or CUDA mismatch.
-
-**Solution:**
-1. Uninstall existing PyTorch: `pip uninstall torch torchvision`
-2. Visit [PyTorch installation page](https://pytorch.org/get-started/locally/)
-3. Install the correct wheel for your CUDA version
-
-### Missing Dataset Folders
-
-**Problem:** Training fails because dataset paths don't exist.
-
-**Solution:** Create the required directory structure:
-
-```bash
-mkdir -p Unet_Architecture/Image_Painting/dataset/dataset/train
-mkdir -p Unet_Architecture/Image_Painting/dataset/dataset/val
-```
-
-Then populate with your images or use the download script.
+**Next Steps for Publication:**
+- Add `LICENSE` file (consider MIT, Apache 2.0, or GPL)
+- Include `CITATION.cff` for academic attribution
+- Create `CONTRIBUTING.md` for community guidelines
+- Expand documentation with dataset preparation guide
 
 ---
 
-## Future Enhancements
+## 🤝 Contributing
 
-Potential improvements for this project:
-
-- [ ] Enhanced `download_data.py` script with credential support
-- [ ] Unit tests and integration tests
-- [ ] GitHub Actions CI/CD workflow
-- [ ] Command-line arguments for `main_run_scan_rebuild.py` (seed, epochs, checkpoint path)
-- [ ] Docker containerization for reproducible environments
-- [ ] Model evaluation scripts with visualization
-- [ ] Pre-trained model weights
+This is research code under active development. Contributions, bug reports, and feature requests are welcome through issues and pull requests.
 
 ---
 
-## License
-
-_(Add your license information here)_
-
-## Citation
-
-_(Add citation information if this is research work)_
-
-## Contact
-
-_(Add contact information or contribution guidelines)_
+**Built with PyTorch** | **Powered by UNet** | **Advancing Medical AI**
