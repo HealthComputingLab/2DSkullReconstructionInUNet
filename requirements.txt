@@ -1,0 +1,32 @@
+## Core Python packages (choose versions compatible with your Python interpreter)
+# Use ranges to increase chance of successful resolution on older Python versions.
+opencv-python>=4.6.0,<5
+numpy>=1.23.0,<2.0
+# pydicom 3.x requires Python >=3.10; for broader compatibility use 2.x
+pydicom>=2.4.4,<3.0
+
+# Image IO / compression backends
+pylibjpeg>=2.0.1
+pylibjpeg-libjpeg>=2.3.0
+pylibjpeg-openjpeg>=2.4.0
+
+# Optional: gdcm is often available via conda; pip installs on Windows may be problematic
+# If you need GDCM consider installing via conda: `conda install -c conda-forge gdcm`
+#gdcm>=1.1
+
+# Visualization and utilities
+pillow>=9.0.0
+matplotlib>=3.5.0
+
+# Perceptual and evaluation libs
+lpips>=0.1.4
+torcheval>=0.1.1
+
+# NOTE: PyTorch is intentionally NOT pinned here because users must pick the wheel
+# that matches their Python and CUDA versions. Install PyTorch separately following
+# the official instructions: https://pytorch.org/get-started/locally/
+# Example (CPU-only):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# Example (CUDA 12.4):
+#   pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision
+
