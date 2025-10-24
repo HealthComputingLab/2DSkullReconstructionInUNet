@@ -15,22 +15,34 @@ import matplotlib.pyplot as plt
 
 
 class ImageDataset(Dataset):
+    """
+    Dataset for image super-resolution task.
+    
+    Creates low-resolution input images by downsampling, with original
+    high-resolution images as targets.
+    """
     def __init__(self, data_dir, width_resize, height_resize, is_train=True):
         self.width_resize = width_resize
         self.height_resize = height_resize
-        self.resize = transforms.Resize((self.width_resize, self.height_resize), antialias=True)
+        self.resize = transforms.Resize(
+            (self.width_resize, self.height_resize), antialias=True
+        )
         self.data_dir = data_dir
         self.is_train = is_train
         self.images = os.listdir(self.data_dir)
 
     def normalize(self, input_img, target_img):
-        # do pytorch đã scale ảnh về (0, 1), ta cần scale về (-1, 1)
+        """
+        Normalize images from [0, 1] to [-1, 1].
+        
+        PyTorch's to_tensor() scales to [0, 1], we further scale to [-1, 1].
+        """
         input_img = input_img * 2 - 1
         target_img = target_img * 2 - 1
-
         return input_img, target_img
 
     def random_transform(self, input_image, target_image):
+        """Apply random horizontal flip augmentation."""
         if torch.rand([]) < 0.5:
             input_image = transforms.functional.hflip(input_image)
             target_image = transforms.functional.hflip(target_image)
@@ -44,6 +56,7 @@ class ImageDataset(Dataset):
         image = np.array(Image.open(img_path).convert("RGB"))
         image = transforms.functional.to_tensor(image)
 
+        # Downsample for low-resolution input
         input_image = self.resize(image)
         target_image = image.type(torch.float32)
 
@@ -56,8 +69,9 @@ class ImageDataset(Dataset):
 
 
 def visualize_data(train_loader):
+    """Visualize low-res inputs and high-res targets from the dataset."""
     input_batch, target_batch = next(iter(train_loader))
-    # đưa ảnh về (0, 1) để visualize
+    # Rescale to [0, 1] for visualization
     input_batch = (input_batch + 1) / 2
     target_batch = (target_batch + 1) / 2
 
@@ -85,6 +99,7 @@ def visualize_data(train_loader):
 
 
 def data(path_train, path_val, width_size, height_size, batch_size):
+    """Initialize datasets and dataloaders for super-resolution."""
     train_dataset = ImageDataset(path_train, width_size, height_size, True)
     val_dataset = ImageDataset(path_val, width_size, height_size, False)
 
@@ -99,17 +114,12 @@ if __name__ == "__main__":
     batch_size = 32
     path_train = "./dataset/dataset/train"
     path_val = "./dataset/dataset/val"
-    # images = os.listdir(path_train)
 
-    # train_dataset = ImageDataset(path_train, width_size, height_size, True)
-    # val_dataset = ImageDataset(path_val, width_size, height_size, False)
-    #
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+    train_dataset, val_dataset, train_loader, val_loader = data(
+        path_train, path_val, width_size, height_size, batch_size
+    )
 
-    train_dataset, val_dataset, train_loader, val_loader = data(path_train, path_val, width_size, height_size, batch_size)
-
-    print(f"Number of image train: {len(train_dataset)} ||Number of image val: {len(val_dataset)}")
+    print(f"Number of image train: {len(train_dataset)} || Number of image val: {len(val_dataset)}")
     print(f"Number of train batch: {len(train_loader)} || Number of val batch: {len(val_loader)}")
 
     visualize_data(train_loader)

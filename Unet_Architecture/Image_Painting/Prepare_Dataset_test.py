@@ -3,6 +3,12 @@ from Unet_Architecture.Image_Painting import library as lib
 
 
 class ImageDataset(Dataset):
+    """
+    Dataset for image inpainting task with random line masking.
+    
+    Creates random line masks on RGB images to simulate damaged/corrupted regions
+    that the model needs to reconstruct.
+    """
     def __init__(self, data_dir, img_width, img_height, is_train=True):
         self.data_dir = data_dir
         self.is_train = is_train
@@ -11,30 +17,51 @@ class ImageDataset(Dataset):
         self.images = os.listdir(self.data_dir)
 
     def normalize(self, input_img, target_img):
-        # do pytorch đã scale ảnh về (0, 1), ta cần scale về (-1, 1)
+        """
+        Normalize images from [0, 1] to [-1, 1] range.
+        
+        PyTorch's to_tensor() automatically scales images to [0, 1],
+        so we scale to [-1, 1] for better training stability.
+        """
         input_img = input_img * 2 - 1
         target_img = target_img * 2 - 1
-
         return input_img, target_img
 
     def random_transform(self, input_image, target_image):
+        """Apply random horizontal flip augmentation with 50% probability."""
         if torch.rand([]) < 0.5:
             input_image = transforms.functional.hflip(input_image)
             target_image = transforms.functional.hflip(target_image)
         return input_image, target_image
 
     def create_mask(self, image, img_height, img_width):
+        """
+        Create random line masks to simulate image corruption.
+        
+        Draws 1-4 random lines with varying thickness on the image,
+        replacing masked regions with white (255).
+        
+        Args:
+            image: Original image array
+            img_height: Image height
+            img_width: Image width
+            
+        Returns:
+            mask_image: Image with random lines masked as white
+        """
         mask_img = image.copy()
         mask = np.full((img_height, img_width, 3), 0, dtype=np.uint8)
+        
+        # Draw 1-4 random lines
         for _ in range(np.random.randint(1, 5)):
-            # tạo tọa độ 2 điểm trên ảnh
+            # Generate random coordinates for two points
             x1, y1 = np.random.randint(1, img_width), np.random.randint(1, img_height)
             x2, y2 = np.random.randint(1, img_width), np.random.randint(1, img_height)
             thick = np.random.randint(1, 15)
 
             cv2.line(mask, (x1, y1), (x2, y2), (1, 1, 1), thickness=thick)
-        # với các ptu mask có gt true, gt 255 sẽ được gán cho phần tử tương ứng trong mask_image
-        # ngược các pt trong mask_image sẽ được giữ nguyên
+        
+        # Where mask is True (1), set pixel to white (255); otherwise keep original
         mask_image = np.where(mask, 255 * np.ones_like(mask), mask_img)
         return mask_image
 
@@ -57,8 +84,13 @@ class ImageDataset(Dataset):
 
 
 def visualize_data(train_loader):
+    """
+    Visualize input and target image pairs from the dataset.
+    
+    Displays the first two samples showing masked inputs and ground truth targets.
+    """
     input_batch, target_batch = next(iter(train_loader))
-    # đưa ảnh về (0, 1) để visualize
+    # Rescale from [-1, 1] to [0, 1] for visualization
     input_batch = (input_batch + 1) / 2
     target_batch = (target_batch + 1) / 2
 
@@ -84,7 +116,9 @@ def visualize_data(train_loader):
     plt.axis('off')
     plt.show()
 
+
 def data(path_train, path_val, width_size, height_size, batch_size):
+    """Create training and validation datasets and dataloaders."""
     train_dataset = ImageDataset(path_train, width_size, height_size, True)
     val_dataset = ImageDataset(path_val, width_size, height_size, False)
 
@@ -92,25 +126,19 @@ def data(path_train, path_val, width_size, height_size, batch_size):
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     return train_dataset, val_dataset, train_loader, val_loader
 
+
 print(__name__)
 if __name__ == "__main__":
     width_size = 256
     height_size = 256
     batch_size = 8
-    #path_train = "./dataset/dataset/train"
-    #path_val = "./dataset/dataset/val"
-    path_train = "D:\\ToanLD_20231033M\\1_MainProject\\Unet_Architecture\\Image_Painting\\dataset\\dataset\\train"
-    path_val = "D:\\ToanLD_20231033M\\1_MainProject\\Unet_Architecture\\Image_Painting\\dataset\\dataset\\val"
+    path_train = "./dataset/dataset/train"
+    path_val = "./dataset/dataset/val"
 
-    # images = os.listdir(path_train)
-
-    # train_dataset = ImageDataset(path_train, width_size, height_size, True)
-    # val_dataset = ImageDataset(path_val, width_size, height_size, False)
-    #
-    # train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    # val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
-    train_dataset, val_dataset, train_loader, val_loader = data(path_train, path_val, width_size, height_size, batch_size)
-    print(f"Number of image train: {len(train_dataset)} ||Number of image val: {len(val_dataset)}")
+    train_dataset, val_dataset, train_loader, val_loader = data(
+        path_train, path_val, width_size, height_size, batch_size
+    )
+    print(f"Number of image train: {len(train_dataset)} || Number of image val: {len(val_dataset)}")
     print(f"Number of train batch: {len(train_loader)} || Number of val batch: {len(val_loader)}")
 
     visualize_data(train_loader)
