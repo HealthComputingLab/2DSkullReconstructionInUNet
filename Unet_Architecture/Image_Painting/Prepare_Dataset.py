@@ -10,7 +10,7 @@ import os
 import cv2
 import torch
 import matplotlib.pyplot as plt
-
+# from datetime import datetime
 
 class ImageDataset(Dataset):
     """
@@ -178,3 +178,4 @@ if __name__ == "__main__":
     print(f"Number of image train: {len(train_dataset)} || Number of image val: {len(val_dataset)}")
     visualize_data(train_loader)
     plt.show()
+    # plt.savefig(f"visualized_data_{datetime.now().strftime("%Y%m%d%H%M%S")}.png")

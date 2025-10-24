@@ -41,7 +41,8 @@ def generate_images_from_batch(inputs, predictions, labels, mask_learn=None, max
 			plt.title(title)
 			plt.axis('off')
 		plt.tight_layout()
-		plt.show()
+		# plt.show()
+		plt.savefig(f"output_{i}.png")
 
 
 def plot_result(num_epochs, train_psnrs, eval_psnrs, train_losses, eval_losses):
@@ -214,7 +215,8 @@ def valid_epoch(model, criterion_bce, criterion_lpips,
 					plt.imshow(tgt, cmap='gray')
 					plt.axis('off')
 					plt.tight_layout()
-					plt.show()
+					# plt.show()
+					plt.savefig(f"debug_output_{i}.png")
 			# ------------------------------------------
 
 			# Calculate combined loss

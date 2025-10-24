@@ -7,6 +7,8 @@ import time
 import numpy as np
 
 from Unet_Architecture.Super_Resolution.library import dice_coefficient
+from datetime import datetime
+
 
 def train_placeholder():
     print('super_resolution train_val module placeholder')
@@ -29,7 +31,8 @@ def generate_images(model, inputs, labels):
         plt.title(title[i])
         plt.imshow((display_list[i] + 1) / 2)
         plt.axis('off')
-    plt.show()
+    # plt.show()
+    plt.savefig(f"generated_images_{datetime.now().strftime('%Y%m%d%H%M%S')}.png")
 
 
 def plot_result(num_epochs, train_psnrs, eval_psnrs, train_losses, eval_losses):
@@ -56,7 +59,8 @@ def predict_and_display(model, test_dataloader, device):
             inputs = inputs.to(device)
             predictions = model(inputs)
             generate_images(model, inputs, labels)
-            plt.show()
+            # plt.show()
+            plt.savefig(f"prediction_display_{datetime.now().strftime('%Y%m%d%H%M%S')}.png")
 
 
 def train_epoch(model, optimizer, criterion, train_loader, device, epoch=0, log_interval=20):

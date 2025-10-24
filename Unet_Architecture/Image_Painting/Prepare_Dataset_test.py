@@ -1,6 +1,7 @@
 from Unet_Architecture.Image_Painting import library as lib
 # NOTE: This test module uses the Image_Painting.library helper. Keep imports minimal.
 
+# from datetime import datetime
 
 class ImageDataset(Dataset):
     """
@@ -115,6 +116,7 @@ def visualize_data(train_loader):
     plt.imshow(target_batch[1].numpy().transpose(1, 2, 0))
     plt.axis('off')
     plt.show()
+    # plt.savefig(f"visualized_data_{datetime.now().strftime('%Y%m%d%H%M%S')}.png")
 
 
 def data(path_train, path_val, width_size, height_size, batch_size):
