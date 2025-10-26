@@ -93,7 +93,7 @@ def main(args):
 
         path_train = train_dir
         path_val = val_dir
-    print(f"Quick mode: created synthetic dataset at {tmp_dir} (non-destructive)")
+        print(f"Quick mode: created synthetic dataset at {tmp_dir} (non-destructive)")
 
     if not path_train.exists():
         raise FileNotFoundError(f"Training path not found: {path_train}")

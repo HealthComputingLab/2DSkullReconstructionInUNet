@@ -270,6 +270,9 @@ def infer_single_image(model, image_path, output_path, device, mask_type='center
     # Postprocess
     output_image = postprocess_output(output_tensor)
     
+    # Ensure output directory exists
+    out_dir = Path(output_path).parent
+    out_dir.mkdir(parents=True, exist_ok=True)
     # Save output
     output_image.save(output_path)
     print(f"   ✅ Saved: {output_path}")
