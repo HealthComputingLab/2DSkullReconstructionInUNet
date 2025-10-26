@@ -137,6 +137,52 @@ Check the top of `main_run_scan_rebuild.py` for command-line options and advance
 
 ---
 
+## 🎯 NEW: Production Training & Inference Scripts
+
+We've added comprehensive training and inference scripts for production use:
+
+### 🚀 Quick Start
+
+```powershell
+# Activate environment
+conda activate 2dskull
+
+# Train the model
+python train_model.py --epochs 250 --save_dir ./checkpoints
+
+# Run inference
+python inference.py --model checkpoints/best_model.pth --input test.jpg --output result.png --visualize
+```
+
+### 📚 New Scripts & Documentation
+
+- **`train_model.py`** - Advanced training with checkpointing, early stopping, and monitoring
+- **`inference.py`** - Flexible inference for single images or batch processing
+- **`analyze_training.py`** - Comprehensive training analysis and visualization
+- **`COMPLETE_TUTORIAL.md`** - Complete step-by-step guide for training and inference
+- **`TRAINING_GUIDE.md`** - Comprehensive training documentation
+- **`QUICK_START.md`** - Get started in 5 minutes
+- **`INFERENCE_SCRIPTS_README.md`** - Detailed scripts documentation
+
+### 🎓 What's New?
+
+✅ **Automatic Checkpointing**: Save best models automatically  
+✅ **Early Stopping**: Prevent overfitting with patience-based stopping  
+✅ **Learning Rate Scheduling**: Adaptive learning rate based on validation performance  
+✅ **Training Visualization**: Sample predictions saved during training  
+✅ **Comprehensive Metrics**: Track Dice score, PSNR, and losses  
+✅ **Flexible Inference**: Single image or batch processing with visualization  
+✅ **Multiple Masking Strategies**: Center, random, or custom mask positions  
+✅ **Training Analysis**: Detailed plots and statistics  
+
+### 📖 Getting Started
+
+**For a complete walkthrough**, see:
+- **[COMPLETE_TUTORIAL.md](COMPLETE_TUTORIAL.md)** - Full step-by-step guide
+- **[QUICK_START.md](QUICK_START.md)** - Fast 5-minute start
+- **[TRAINING_GUIDE.md](TRAINING_GUIDE.md)** - Detailed training documentation
+
+
 ## 🗂️ Project Structure
 
 ```

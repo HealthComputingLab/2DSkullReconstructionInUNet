@@ -70,8 +70,9 @@ def main(args):
         import shutil
         from PIL import Image
         import numpy as np
-
-        tmp_dir = Path.cwd() / "dataset"
+        # Use a separate folder to avoid overwriting real dataset
+        tmp_dir = Path.cwd() / "dataset_quick"
+        # Clean up any previous quick dataset only
         if tmp_dir.exists():
             shutil.rmtree(tmp_dir)
         train_dir = tmp_dir / "train"
@@ -92,7 +93,7 @@ def main(args):
 
         path_train = train_dir
         path_val = val_dir
-        print(f"Quick mode: created synthetic dataset at {tmp_dir}")
+    print(f"Quick mode: created synthetic dataset at {tmp_dir} (non-destructive)")
 
     if not path_train.exists():
         raise FileNotFoundError(f"Training path not found: {path_train}")
