@@ -47,7 +47,7 @@ pip install -r requirements.txt
 python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 # Install torch to use CUDA for training if "torch.cuda.is_available()" == False
 # e.g. Install CUDA for Nvidia Driver 12.8 in Python 3.9
-
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 --upgrade --force-reinstall
 python -c "import torch; print(f'PyTorch Version: {torch.__version__}'); print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'CUDA Version (PyTorch): {torch.version.cuda}')"
 # Having installed the CUDA correctly, the command above should output something related to "True"
 
